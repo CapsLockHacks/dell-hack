@@ -5,36 +5,33 @@ import socket
 import json
 
 
+executable = 'C:\Program Files\Sublime Text 3\sublime_text.exe'
 
 app=Flask(__name__)
 
-@app.route('/receive_from_alexa',methods=['GET'])
+@app.route('/receive_from_alexa',methods=['POST'])
 def alexa():
-  input_data = request.args
+  input_data = request.data
+  input_data = json.loads()
   # input_data = {}
   # input_data['intent'] = 'SQL_QUERY'
   print(input_data['intent'])
+
+  server_socket= socket.socket()
+  server_socket.bind((host,port))
+  server_socket.listen(1)
+
   if input_data['intent']=='SQL_QUERY':
-    print("inside")
+    # print("inside")
     result=""
     host="127.0.0.1"
     port=12345
-    executable = 'C:\Program Files\Sublime Text 3\sublime_text.exe'
     command = '@"' + executable + '" --command "example"'
-    print(command)
-    # subprocess.Popen(cmdList, stdout=subprocess.PIPE)
     os.system(command)
-    print("socket starting")
-    server_socket= socket.socket()
-    print("socket created")
-    server_socket.bind((host,port))
-    print("socket bound")
-    server_socket.listen(1)
-    print("socket listening")
+
     conn, address = server_socket.accept()
-    print("socket started")
     while True:
-      print("waitingfordata")
+
       data = conn.recv(1024).decode()
       
       if data:
@@ -44,25 +41,27 @@ def alexa():
         cursor.execute(query)
         result=cursor.fetchone()
        
-        # return json.dumps({"result":"HELLO MOTHER FOCK HERS"})
+
         conn.close()
         return json.dumps({"result":str(result[0])})
     return result
 
+    ###############################################################
 
-@app.route('/receive_from_sublime',methods=['GET'])
-def sublime():
-	database="chinook.db"
-	data=request.args
-	query=(data['q'])
-	conn = sqlite3.connect(database)
-	cursor=conn.cursor()
-	cursor.execute(query)
-	result=cursor.fetchall()
-	print(result)
-	#returning
-	return result
-	
+  if input_data['intent']= 'CURRENT_DOCSTRING':
 
-if __name__ == '__main__':
-	app.run(host="0.0.0.0",debug=True)
+    command='@"' + executable + '" --command "auto_docstring"'
+    os.system(command)
+
+    return json.dumps({"result": "Generated the Documentation for this function"})
+
+  if input_data['intent']= 'ALL_DOCSTRING':
+
+    command='@"' + executable + '" --command "auto_docstring_all"'
+    os.system(command)
+
+    return json.dumps({"result": "Generated the Documentation for this file"})
+
+
+if name == '__main__':
+  app.run(host="0.0.0.0",debug=True)
