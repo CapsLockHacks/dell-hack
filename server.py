@@ -49,26 +49,6 @@ def alexa():
         conn.close()
         return json.dumps({"result":str(result[0])}) 
 
-  if input_data['intent']=='GET_ROWS':
-    # print("inside")
-    result=""
-    command = '@"' + executable + '" --command "example"'
-
-    os.system(command)
-
-    conn, address = server_socket.accept()
-    while True:
-
-      data = conn.recv(1024).decode()
-      
-      if data:
-        query = "Select count(*) from "+tablename+";"
-        cursor=conn.cursor()
-        cursor.execute(query)
-        result=cursor.fetchone()
-        conn.close()
-        return(json.dumps({"result":str(result[0])}))
-
   if input_data['intent']=='RISE_ROWS':
     tablename = "invoices"
     db_con = sqlite3.connect("chinook.db")
@@ -83,25 +63,23 @@ def alexa():
     db_con.close()
     return(json.dumps({"result":str(result)}))
 
-  if input_data['intent']=='RISE_ROWS':
-    # print("inside")
-    result=""
-    command = '@"' + executable + '" --command "example"'
-
-    os.system(command)
-
-    conn, address = server_socket.accept()
-    while True:
-
-      data = conn.recv(1024).decode()
-      
-      if data:
-        query = "Select MAX(InvoiceDate) AS LASTACCESSDATE from "+tablename+";"
-        cursor=conn.cursor()
-        cursor.execute(query)
-        result=cursor.fetchone()
-        conn.close()
-        return(json.dumps({"result":str(result[0])}))
+  if input_data['intent']=='LAST_ACCESS':
+    tablename = "invoices"
+    query = "Select MAX(InvoiceDate) AS LASTACCESSDATE from "+tablename+";"
+    cursor=conn.cursor()
+    cursor.execute(query)
+    result=cursor.fetchone()
+    conn.close()
+    return(json.dumps({"result":str(result[0])}))
+  
+  if input_data['intent']=='GET_ROWS':
+    tablename = "invoices"
+    query = "Select count(*) from "+tablename+";"
+    cursor=conn.cursor()
+    cursor.execute(query)
+    result=cursor.fetchone()
+    conn.close()
+    return(json.dumps({"result":str(result[0])}))
 
 
   if input_data['intent'] == 'CURRENT_DOCSTRING':
