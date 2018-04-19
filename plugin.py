@@ -17,7 +17,7 @@ def send_data_to_server(data):
 
 class ExampleCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-
+        print("test")
         # self.view.line(self.selection)
 
         line_string = self.view.substr(self.view.line(self.view.sel()[0]))

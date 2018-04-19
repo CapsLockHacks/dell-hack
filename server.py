@@ -17,15 +17,22 @@ def alexa():
   if input_data['intent']=='SQL_QUERY':
     print("inside")
     result=""
-    host="0.0.0.0"
+    host="127.0.0.1"
     port=12345
-    command = "subl --command 'example'"
+    executable = 'C:\Program Files\Sublime Text 3\sublime_text.exe'
+    command = '@"' + executable + '" --command "example"'
+    print(command)
     # subprocess.Popen(cmdList, stdout=subprocess.PIPE)
     os.system(command)
+    print("socket starting")
     server_socket= socket.socket()
+    print("socket created")
     server_socket.bind((host,port))
+    print("socket bound")
     server_socket.listen(1)
+    print("socket listening")
     conn, address = server_socket.accept()
+    print("socket started")
     while True:
       print("waitingfordata")
       data = conn.recv(1024).decode()
@@ -38,14 +45,14 @@ def alexa():
         result=cursor.fetchone()
        
         # return json.dumps({"result":"HELLO MOTHER FOCK HERS"})
+        conn.close()
         return json.dumps({"result":str(result[0])})
-    conn.close()
     return result
 
 
 @app.route('/receive_from_sublime',methods=['GET'])
 def sublime():
-	database=""
+	database="chinook.db"
 	data=request.args
 	query=(data['q'])
 	conn = sqlite3.connect(database)
