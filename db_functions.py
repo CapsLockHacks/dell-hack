@@ -10,6 +10,7 @@ def db_functions(tablename,databasename,intent):
         getLastAccessDate(tablename,conn)
 
 def getLastAccessDate(tablename, conn):
+    conn = sqlite3.connect("chinook.db")
     query = "Select MAX(InvoiceDate) AS LASTACCESSDATE from "+tablename+";"
     cursor=conn.cursor()
     cursor.execute(query)
@@ -18,7 +19,8 @@ def getLastAccessDate(tablename, conn):
     return(json.dumps({"result":str(result[0])}))
 
 def getRiseinRows(tablename, conn):
-    cursor=conn.cursor()
+    db_con = sqlite3.connect("chinook.db")
+    cursor=db_con.cursor()
     q1 = "select count(*) from "+tablename+" where InvoiceDate <= datetime('now','-1 day');"
     cursor.execute(q1)
     total=int(cursor.fetchone())
@@ -26,10 +28,11 @@ def getRiseinRows(tablename, conn):
     cursor.execute(q2)
     diff=int(cursor.fetchone())
     result = (diff/total)*100
-    conn.close()
+    db_con.close()
     return(json.dumps({"result":str(result)}))
 
 def getRows(tablename, conn):
+    conn = sqlite3.connect("chinook.db")
     query = "Select count(*) from "+tablename+";"
     cursor=conn.cursor()
     cursor.execute(query)

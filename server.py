@@ -29,7 +29,7 @@ def alexa():
   if input_data['intent']=='SQL_QUERY':
     # print("inside")
     result=""
-    command = '@"' + executable + '" --command "example"'
+    command = '@"' + executable + '" --command "line"'
 
     os.system(command)
 
@@ -98,7 +98,25 @@ def alexa():
 
   if input_data['intent'] == 'GEN_DOC':
     result=""
-    command = '@"' + executable + '" --command "example"'
+    command = '@"' + executable + '" --command "path"'
+
+    os.system(command)
+
+    conn, address = server_socket.accept()
+    while True:
+
+      path = conn.recv(1024).decode()
+      
+      if path:
+        conn.close()
+        path=path[:path.rfind('\\')]
+
+        command_md = "python py2md.py -s "+path+"  -o README.md"
+        os.system(command_md) 
+
+        
+        return json.dumps({"result": "Generated the README for this Folder"}) 
+
 
 
 
