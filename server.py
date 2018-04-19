@@ -92,20 +92,24 @@ def alexa():
 
   if input_data['intent']=='LAST_ACCESS':
     tablename = "invoices"
+    db_con = sqlite3.connect("chinook.db")
+
     query = "Select MAX(InvoiceDate) AS LASTACCESSDATE from "+tablename+";"
-    cursor=conn.cursor()
+    cursor=db_con.cursor()
     cursor.execute(query)
     result=cursor.fetchone()
-    conn.close()
+    db_con.close()
     return(json.dumps({"result":str(result[0])}))
   
   if input_data['intent']=='GET_ROWS':
     tablename = "invoices"
+    db_con = sqlite3.connect("chinook.db")
+
     query = "Select count(*) from "+tablename+";"
-    cursor=conn.cursor()
+    cursor=db_con.cursor()
     cursor.execute(query)
     result=cursor.fetchone()
-    conn.close()
+    db_con.close()
     return(json.dumps({"result":str(result[0])}))
 
 
