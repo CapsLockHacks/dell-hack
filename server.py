@@ -5,6 +5,10 @@ import socket
 import json
 import base64
 import re
+import sys
+import subprocess
+import requests
+from io import BytesIO, TextIOWrapper
 
 executable = 'C:\Program Files\Sublime Text 3\sublime_text.exe'
 host="127.0.0.1"
@@ -188,6 +192,37 @@ def alexa():
     print(command)
     os.system(command)
     return json.dumps({"result": "Inserted it"}) 
+
+  if input_data['intent'] == 'RUN_TESTS':
+    from subprocess import Popen, PIPE
+    os.chdir('c:\\dev\\hackathon\\roro-textar')
+
+    command = ['python', '-m', 'nose']
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = process.communicate()
+    if err.splitlines()[-1][:len("FAILED")] == b'FAILED':
+
+      r = requests.post(
+        "https://api.mailgun.net/v3/rohanverma.net/messages",
+        auth=("api", "key-cdb3edf241642090b03ba98ddb6e979c"),
+        data={"from": "Rohan Verma <hello@rohanverma.net>",
+        "to": "hithesh <jbhithesh@gmail.com>",
+        "subject": "Here are your test results ran by your Coding Companion",
+        "text": "Your test results:" + err.decode('utf-8')
+      })
+
+      print(r.status_code)
+
+      return json.dumps({"result": "Tests Failed!"})
+
+    else:
+      return json.dumps({"result": "Tests Passed!"})
+    os.chdir('c:\\dev\\hackathon\\dell-hack')
+
+
+
+
+     
 
 if __name__ == '__main__':
   app.run(host="0.0.0.0",debug=True)
