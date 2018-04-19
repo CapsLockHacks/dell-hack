@@ -109,14 +109,19 @@ def alexa():
     command='@"' + executable + '" --command "auto_docstring"'
     os.system(command)
 
-    return json.dumps({"result": "Generated the Documentation for this function"})
+    return json.dumps({"result": "Generated the Doc Strings for this function"})
 
   if input_data['intent'] == 'ALL_DOCSTRING':
 
     command='@"' + executable + '" --command "auto_docstring_all"'
     os.system(command)
 
-    return json.dumps({"result": "Generated the Documentation for this file"})
+    return json.dumps({"result": "Generated the Doc Strings for this file"})
+
+  if input_data['intent'] == 'GEN_DOC':
+    result=""
+    command = '@"' + executable + '" --command "example"'
+
 
 
 if __name__ == '__main__':
