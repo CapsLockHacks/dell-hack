@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import sqlite3
 import os
 import socket
@@ -251,11 +251,11 @@ def alexa():
     })
     print(r.status_code)
 
+    os.chdir('c:\\dev\\hackathon\\dell-hack')
 
     return json.dumps({"result": "I am emailing you the code coverage results"})
 
 
-    os.chdir('c:\\dev\\hackathon\\dell-hack')
 
 
   if input_data['intent'] == 'DB_TASK':
@@ -309,5 +309,10 @@ def alexa():
 
      
   return json.dumps({"result": "Sorry. I could not understand"})
+
+@app.route('/')
+def home():
+  return render_template('index.html')
+
 if __name__ == '__main__':
   app.run(host="0.0.0.0",debug=True)
