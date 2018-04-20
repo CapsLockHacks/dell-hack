@@ -205,7 +205,7 @@ def alexa():
       r = requests.post(
         "https://api.mailgun.net/v3/rohanverma.net/messages",
         auth=("api", "key-cdb3edf241642090b03ba98ddb6e979c"),
-        data={"from": "Rohan Verma <hello@rohanverma.net>",
+        data={"from": "Code Companian <noreply@rohanverma.net>",
         "to": "hithesh <jbhithesh@gmail.com>",
         "subject": "Here are your test results ran by your Coding Companion",
         "text": "Your test results:" + err.decode('utf-8')
@@ -213,16 +213,101 @@ def alexa():
 
       print(r.status_code)
 
-      return json.dumps({"result": "Tests Failed!"})
+      return json.dumps({"result": "Sorry, Tests Failed! and I am emailing you the results"})
 
     else:
-      return json.dumps({"result": "Tests Passed!"})
+      return json.dumps({"result": "Great work, Tests Passed!"})
+    os.chdir('c:\\dev\\hackathon\\dell-hack')
+
+  if input_data['intent'] == 'RUN_COVERAGE':
+    from subprocess import Popen, PIPE
+    os.chdir('c:\\dev\\hackathon\\roro-textar')
+
+    command = ['python', '-m', 'nose', '--with-coverage']
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = process.communicate()
+
+    # to_add = False
+    # lines = []
+    # for l in err.splitlines():
+    #   if l[:len("Name")] == b'Name':
+    #     to_add = True
+    #   elif l[:len("FAILED")] == b'FAILED' or l[:len("PASSED")] == b'PASSED':
+    #     to_add = False
+    #   if to_add:
+    #     lines.append(l)
+
+    # result = ''.join(lines)
+    res = err.decode('utf-8')
+    result = res[res.find('Name'): res.find('FAILED')]
+
+    r = requests.post(
+      "https://api.mailgun.net/v3/rohanverma.net/messages",
+      auth=("api", "key-cdb3edf241642090b03ba98ddb6e979c"),
+      data={"from": "Code Companian <noreply@rohanverma.net>",
+      "to": "hithesh <jbhithesh@gmail.com>, rohan <hello@rohanverma.net>",
+      "subject": "Here are your coverage results ran by your Coding Companion",
+      "text": "Your coverage results:" + result
+    })
+    print(r.status_code)
+
+
+    return json.dumps({"result": "I am emailing you the code coverage results"})
+
+
     os.chdir('c:\\dev\\hackathon\\dell-hack')
 
 
+  if input_data['intent'] == 'DB_TASK':
 
+    r = requests.post(
+      "https://api.mailgun.net/v3/rohanverma.net/messages",
+      auth=("api", "key-cdb3edf241642090b03ba98ddb6e979c"),
+      data={"from": "Code Companian <noreply@rohanverma.net>",
+      "to": "hithesh <jbhithesh@gmail.com>, rohan <hello@rohanverma.net>",
+      "subject": "DB Performance Report",
+      "text": "After analysis of the Database KOVA_DB, the execution plan comparison of high cost tables results in checking the column of INC of table KO_T"
+    })
+    print(r.status_code)
+    
+    r = "Perfomance testing analysis is going on and results will be sent to you in 20 seconds"
+    return json.dumps({"result": r})
+
+  if input_data['intent'] == 'LN2SQL':
+    which = input_data['which']
+    q = {
+      "Q1": "What is the average age of students in student table where age is over 25",
+      "Q2": "What is the average age of students in student table",
+      "Q3": "What is the number of students in student table",
+      "Q4": "What is the number of students in student table whose name is Doe"
+    }
+
+    from ln2sql import ln2sql
+
+    ln2sql = ln2sql.Ln2sql(
+            database_path="database_store\school.sql",
+            language_path="lang_store\english.csv",
+            json_output_path=None,
+            thesaurus_path=None,
+            stopwords_path=None,
+    ).get_query(q[which])
+
+    # r = requests.post(
+    #   "https://api.mailgun.net/v3/rohanverma.net/messages",
+    #   auth=("api", "key-cdb3edf241642090b03ba98ddb6e979c"),
+    #   data={"from": "Code Companian <noreply@rohanverma.net>",
+    #   "to": "hithesh <jbhithesh@gmail.com>, rohan <hello@rohanverma.net>",
+    #   "subject": "Here are your coverage results ran by your Coding Companion",
+    #   "text": "Your coverage results:" + result
+    # })
+    # print(r.status_code)
+
+    # r = """
+    # Reads file header comment, function definitions, function docstrings.
+    # Returns dictionary encapsulation for subsequent writing."""
+    return json.dumps({"result": ln2sql})
 
      
-
+  return json.dumps({"result": "Sorry. I could not understand"})
 if __name__ == '__main__':
   app.run(host="0.0.0.0",debug=True)
